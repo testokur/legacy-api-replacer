@@ -1,0 +1,16 @@
+version: 2.1
+jobs:
+  build:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: |
+            docker build -t testokur-legacy:latest .
+            docker save -o testokur-legacy.tar testokur-legacy:latest            
+      - run:
+          name: Deploy
+          command: |
+            scp -q testokur-legacy.tar $SSH_USERNAME@$SSH_HOST:/home/docker-images/
+            ssh  $SSH_USERNAME@$SSH_HOST 'bash -s' < deploy.sh
